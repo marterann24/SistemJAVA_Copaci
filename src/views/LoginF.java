@@ -13,8 +13,9 @@ import javax.swing.JOptionPane;
 public class LoginF extends javax.swing.JFrame {
 
     public LoginF() {
-        initComponents();
+    initComponents();
     setupPlaceholders();
+    this.setLocationRelativeTo(null);
 
     btnInicioSesion.addActionListener(new java.awt.event.ActionListener() {
     public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -144,7 +145,7 @@ public class LoginF extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuarioActionPerformed
-        // TODO add your handling code here:
+        IniciarSesion();
     }//GEN-LAST:event_txtUsuarioActionPerformed
 
 private void setupPlaceholders(){
@@ -186,21 +187,28 @@ private void setupPlaceholders(){
         }
     });
 }   
-private void IniciarSesion() {
-        String usuario = txtUsuario.getText().trim();
-        String password = txtPassword.getText().trim(); // <-- para JTextField funciona perfecto
+    private void IniciarSesion() {
 
-        if (usuario.equals("Ingresa tu usuario:") || usuario.isEmpty()
-                || password.equals("Ingresa tu contraseña:") || password.isEmpty()) {
+    String usuario = txtUsuario.getText().trim();
+    String password = txtPassword.getText().trim();
 
-            JOptionPane.showMessageDialog(this, "Por favor ingresa usuario y contraseña");
-            return;
-        }
+    if (usuario.equals("Ingresa tu usuario:") || usuario.isEmpty()
+            || password.equals("Ingresa tu contraseña:") || password.isEmpty()) {
 
-        BD.DataBase_Connection conexion = new BD.DataBase_Connection();
-        java.sql.Connection conn = conexion.getConnection();
+        JOptionPane.showMessageDialog(this, "Por favor ingresa usuario y contraseña");
+        return;
+    }
+
+    // Se desactiva el boton mientras se hace la consulta
+    btnInicioSesion.setEnabled(false);
+    btnInicioSesion.setText("Validando...");
+
+    new Thread(() -> {
 
         try {
+            BD.DataBase_Connection conexion = new BD.DataBase_Connection();
+            java.sql.Connection conn = conexion.getConnection();
+
             String sql = "SELECT nombre FROM administrador WHERE usuario = ? AND password = ?";
             java.sql.PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, usuario);
@@ -211,15 +219,20 @@ private void IniciarSesion() {
             if (rs.next()) {
                 String nombre = rs.getString("nombre");
 
-                JOptionPane.showMessageDialog(this,
-                        "✔ Inicio de sesión exitoso\nBienvenido, " + nombre + "!");
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(this,
+                            "Inicio de sesión exitoso\nBienvenido, " + nombre + "!");
 
-                Dashboard dash = new Dashboard();
-                dash.setVisible(true);
-                this.dispose();
+                    Dashboard dash = new Dashboard();
+                    dash.setVisible(true);
+                    this.dispose();
+                });
 
             } else {
-                JOptionPane.showMessageDialog(this, "❌ Usuario o contraseña incorrectos");
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(this,
+                            "❌ Usuario o contraseña incorrectos");
+                });
             }
 
             rs.close();
@@ -228,9 +241,19 @@ private void IniciarSesion() {
 
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "❌ Error al conectar con la base de datos");
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(this,
+                        "Error al conectar con la base de datos");
+            });
         }
-    }
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            btnInicioSesion.setEnabled(true);
+            btnInicioSesion.setText("Iniciar sesión");
+        });
+
+    }).start();  
+}
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
