@@ -27,11 +27,11 @@ public class DataBase_Connection {
             connection = DriverManager.getConnection(url, usuario, password);
 
             if (connection != null) {
-                System.out.println("✅ Conexión exitosa a PostgreSQL");
+                System.out.println("Conexión exitosa a PostgreSQL");
             }
 
         } catch (Exception e) {
-            System.out.println("❌ Error al conectar con la base de datos PostgreSQL");
+            System.out.println("Error al conectar con la base de datos PostgreSQL");
             System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
         }
