@@ -12,10 +12,10 @@ public class DataBase_Connection {
 
     private Connection connection;
 
-    private String usuario = "postgres";      
-    private String password = "postmari7";         
+    private String usuario = "usuario";      
+    private String password = "password";         
     private String servidor = "localhost";
-    private String puerto = "5432";           
+    private String puerto = "port";           
     private String nombreBD = "copaciDB";     
 
     private String url = "jdbc:postgresql://" + servidor + ":" + puerto + "/" + nombreBD;
