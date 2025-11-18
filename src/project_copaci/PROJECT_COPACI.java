@@ -8,13 +8,18 @@ package project_copaci;
  *
  * @author marit
  */
+
+import views.LoginF;
+
 public class PROJECT_COPACI {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        // TODO code application logic here
+        try {
+            javax.swing.UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception e) {}
+
+        LoginF login = new LoginF();
+        login.setVisible(true);
     }
     
 }
